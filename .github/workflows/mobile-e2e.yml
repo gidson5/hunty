@@ -27,10 +27,7 @@ jobs:
 
       - name: Install mobile dependencies
         working-directory: mobile
-        run: |
-          corepack enable
-          corepack prepare pnpm@9.15.4 --activate
-          pnpm install --frozen-lockfile
+        run: npm install --legacy-peer-deps
 
       - name: Validate Maestro E2E baseline
         working-directory: mobile
