@@ -3,9 +3,12 @@ import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Theme = 'light' | 'dark';
+export type ThemePreference = 'light' | 'dark' | 'system';
 
 interface ThemeContextType {
   theme: Theme;
+  themePreference: ThemePreference;
+  setThemePreference: (preference: ThemePreference) => void;
   toggleTheme: () => void;
   isDark: boolean;
   colors: ColorScheme;
@@ -51,46 +54,47 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const systemColorScheme = useColorScheme();
-  const [theme, setTheme] = useState<Theme>(systemColorScheme === 'dark' ? 'dark' : 'light');
+  const [preference, setPreference] = useState<ThemePreference>('system');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Load saved theme preference
-    const loadTheme = async () => {
-      try {
-        const savedTheme = await AsyncStorage.getItem('theme');
-        if (savedTheme) {
-          setTheme(savedTheme as Theme);
-        } else if (systemColorScheme) {
-          setTheme(systemColorScheme === 'dark' ? 'dark' : 'light');
-        }
-      } catch (error) {
-        console.warn('Failed to load theme preference:', error);
+    AsyncStorage.getItem('themePreference').then((saved) => {
+      if (saved === 'light' || saved === 'dark' || saved === 'system') {
+        setPreference(saved);
       }
       setMounted(true);
-    };
-    loadTheme();
-  }, [systemColorScheme]);
+    }).catch(() => {
+      setMounted(true);
+    });
+  }, []);
 
-  const toggleTheme = async () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+  const setThemePreference = async (newPreference: ThemePreference) => {
+    setPreference(newPreference);
     try {
-      await AsyncStorage.setItem('theme', newTheme);
-    } catch (error) {
-      console.warn('Failed to save theme preference:', error);
+      await AsyncStorage.setItem('themePreference', newPreference);
+    } catch {
+      console.warn('Failed to save theme preference');
     }
   };
 
-  const isDark = theme === 'dark';
+  const resolvedTheme: Theme =
+    preference === 'system'
+      ? systemColorScheme === 'dark' ? 'dark' : 'light'
+      : preference;
+
+  const toggleTheme = () => {
+    setThemePreference(resolvedTheme === 'light' ? 'dark' : 'light');
+  };
+
+  const isDark = resolvedTheme === 'dark';
   const colors = isDark ? darkColors : lightColors;
 
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, isDark, colors }}>
+    <ThemeContext.Provider
+      value={{ theme: resolvedTheme, themePreference: preference, setThemePreference, toggleTheme, isDark, colors }}
+    >
       {children}
     </ThemeContext.Provider>
   );
