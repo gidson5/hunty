@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { ThemedView } from '@components/themed';
+import { GraphQLHuntsFeed } from '@components/GraphQLHuntsFeed';
 import { HuntsList } from '@components/HuntsList';
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, ActivityIndicator, Alert } from 'react-native';
@@ -90,6 +91,7 @@ export default function HuntsScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <GraphQLHuntsFeed />
       <HuntsList />
     </ThemedView>
     <ScrollView 

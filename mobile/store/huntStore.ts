@@ -102,6 +102,16 @@ async function writeHunts(hunts: StoredHunt[]): Promise<void> {
   }
 }
 
+/** Active hunts for feed (local fallback). */
+export async function getActiveHuntsForFeed(): Promise<StoredHunt[]> {
+  const hunts = await readHunts();
+  return hunts.filter((h) => h.status === "Active" && !h.is_private);
+}
+
+/** Get a single hunt by ID */
+export async function getHuntById(id: number): Promise<StoredHunt | undefined> {
+  const hunts = await readHunts();
+  return hunts.find((h) => h.id === id);
 /** Active hunts for feed with cover images. */
 export async function getActiveHuntsForFeed(): Promise<StoredHunt[]> {
   const hunts = await readHunts();

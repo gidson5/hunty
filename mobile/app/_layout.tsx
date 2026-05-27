@@ -17,9 +17,10 @@ import { Sentry, initializeSentry } from '@config/sentry';
 initializeSplashScreen();
 initializeSentry();
 
-export const unstable_settings = {
-  initialRouteName: '(tabs)',
-};
+initializeSplashScreen();
+initializeSentry();
+
+export const unstable_settings = { initialRouteName: '(tabs)' };
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   useEffect(() => {
@@ -30,6 +31,8 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
         <View style={styles.errorContainer}>
+          <ThemedCustomText variant="h2">Something went wrong</ThemedCustomText>
+          <ThemedCustomText variant="body">{error.message}</ThemedCustomText>
           <ThemedCustomText variant="h2" style={styles.errorTitle}>
             Something went wrong
           </ThemedCustomText>
@@ -87,6 +90,9 @@ function RootLayoutNav() {
       return false;
     });
     return () => backHandler.remove();
+  }, [router]);
+
+  if (!loaded && !error) return null;
   }, [router]);
 
   if (!loaded && !error) return null;
