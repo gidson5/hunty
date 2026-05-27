@@ -22,6 +22,19 @@ export default function DetailsScreen() {
     if (clues.length === 0) return 0;
     return Math.round((completedClues.size / clues.length) * 100);
   }, [completedClues.size, clues.length]);
+  const registeredPlayers = useMemo(() => Math.max(12, clues.length * 5 + hId), [clues.length, hId]);
+  const prizePool = useMemo(() => {
+    const xlm = Math.max(10, clues.length * 3);
+    const nftCount = hunt?.rewardType === 'NFT' || hunt?.rewardType === 'Both' ? Math.max(1, Math.floor(clues.length / 3)) : 0;
+    return { xlm, nftCount };
+  }, [clues.length, hunt?.rewardType]);
+  const creatorAddress = useMemo(() => {
+    if (hunt?.creatorEmail) {
+      const username = hunt.creatorEmail.split('@')[0] || 'creator';
+      return `G${username.toUpperCase().slice(0, 5)}...${String(hId).padStart(4, '0')}`;
+    }
+    return `GHUNT...${String(hId).padStart(4, '0')}`;
+  }, [hunt?.creatorEmail, hId]);
 
   useEffect(() => {
     const id = Number(huntId);
@@ -53,6 +66,13 @@ export default function DetailsScreen() {
 
       <ThemedCustomText variant="body" style={styles.description}>{hunt.description}</ThemedCustomText>
 
+      <View style={[styles.loreCard, { backgroundColor: colors.primary + '10', borderColor: colors.primary + '30' }]}>
+        <ThemedCustomText variant="label" weight="700" style={styles.sectionTitle}>Hunt Lore</ThemedCustomText>
+        <ThemedCustomText variant="body" style={styles.loreText}>
+          {hunt.description} Follow the trail, unlock each clue, and race to claim the final reward before rival hunters do.
+        </ThemedCustomText>
+      </View>
+
       <View style={styles.metaContainer}>
         <View style={[styles.metaItem, { backgroundColor: colors.background, borderColor: colors.border }]}> 
           <ThemedCustomText variant="caption" style={styles.metaLabel}>Total Clues</ThemedCustomText>
@@ -64,11 +84,23 @@ export default function DetailsScreen() {
         </View>
         <View style={[styles.metaItem, { backgroundColor: colors.background, borderColor: colors.border }]}> 
           <ThemedCustomText variant="caption" style={styles.metaLabel}>Players</ThemedCustomText>
-          <ThemedCustomText variant="h3" color="primary" weight="700">{Math.max(12, clues.length * 5)}</ThemedCustomText>
+          <ThemedCustomText variant="h3" color="primary" weight="700">{registeredPlayers}</ThemedCustomText>
         </View>
         <View style={[styles.metaItem, { backgroundColor: colors.background, borderColor: colors.border }]}> 
           <ThemedCustomText variant="caption" style={styles.metaLabel}>Creator</ThemedCustomText>
-          <ThemedCustomText variant="label" weight="700">GD72...3W9A</ThemedCustomText>
+          <ThemedCustomText variant="label" weight="700">{creatorAddress}</ThemedCustomText>
+        </View>
+      </View>
+
+      <View style={[styles.prizeCard, { borderColor: colors.warning, backgroundColor: colors.warning + '12' }]}>
+        <ThemedCustomText variant="label" weight="700" style={styles.sectionTitle}>Prize Breakdown</ThemedCustomText>
+        <View style={styles.prizeRow}>
+          <ThemedCustomText variant="body">XLM Pool</ThemedCustomText>
+          <ThemedCustomText variant="label" weight="700" color="warning">{prizePool.xlm} XLM</ThemedCustomText>
+        </View>
+        <View style={styles.prizeRow}>
+          <ThemedCustomText variant="body">NFT Rewards</ThemedCustomText>
+          <ThemedCustomText variant="label" weight="700" color="warning">{prizePool.nftCount}</ThemedCustomText>
         </View>
       </View>
 
@@ -201,6 +233,29 @@ const styles = StyleSheet.create({
   metaLabel: {
     textTransform: 'uppercase',
     letterSpacing: 0.3,
+  },
+  loreCard: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 12,
+  },
+  loreText: {
+    lineHeight: 20,
+  },
+  prizeCard: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 12,
+    gap: 8,
+  },
+  prizeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   progressSection: {
     paddingHorizontal: 16,
