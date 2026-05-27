@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack, type ErrorBoundaryProps, useRouter } from 'expo-router';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hideSplashScreen, initializeSplashScreen } from '@utils/splashScreenManager';
 import { ThemeProvider, useTheme } from '@providers/ThemeProvider';
 import ReactQueryProvider from '@providers/ReactQueryProvider';
@@ -55,12 +56,38 @@ function RootLayoutNav() {
   const router = useRouter();
   const { colors, isDark } = useTheme();
   const [fontsLoaded, fontError] = useFonts();
+  const [onboardingResolved, setOnboardingResolved] = useState(false);
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
       void hideSplashScreen();
     }
   }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    if (!fontsLoaded && !fontError) return;
+
+    let isMounted = true;
+
+    const maybeShowOnboarding = async () => {
+      try {
+        const seen = await AsyncStorage.getItem('hunty_onboarding_seen');
+        if (!seen && isMounted) {
+          router.replace('/onboarding');
+        }
+      } finally {
+        if (isMounted) {
+          setOnboardingResolved(true);
+        }
+      }
+    };
+
+    void maybeShowOnboarding();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fontsLoaded, fontError, router]);
 
   const handleBackPress = useCallback(() => {
     if (router.canGoBack()) {
@@ -73,7 +100,7 @@ function RootLayoutNav() {
 
   useBackHandler(handleBackPress);
 
-  if (!fontsLoaded && !fontError) {
+  if ((!fontsLoaded && !fontError) || !onboardingResolved) {
     return null;
   }
 
@@ -90,6 +117,7 @@ function RootLayoutNav() {
           statusBarStyle: isDark ? 'light' : 'dark',
         }}
       >
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="hunt/[id]" options={{ title: 'Hunt Details' }} />
         <Stack.Screen name="transaction/pending" options={{ title: 'Transaction Pending' }} />
