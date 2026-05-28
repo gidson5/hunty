@@ -44,7 +44,6 @@ export const QRScanner: React.FC<QRScannerProps> = ({
     if (!scanned) {
       setScanned(true);
       onScan(data);
-      // Auto-close after a short delay to show the scan was successful
       setTimeout(onClose, 800);
     }
   };
@@ -53,18 +52,29 @@ export const QRScanner: React.FC<QRScannerProps> = ({
 
   if (!permission) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View
+        accessible={true}
+        accessibilityLabel="Camera permission required"
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.centerContent}>
           <Text style={[styles.permissionText, { color: colors.text }]}>
             Camera permission is required
           </Text>
           <TouchableOpacity
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Grant camera permission"
+            accessibilityHint="Opens system permission dialog for camera access"
             style={[styles.permissionButton, { backgroundColor: colors.primary }]}
             onPress={() => requestPermission()}
           >
             <Text style={styles.buttonText}>Grant Permission</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Close scanner"
             style={styles.closeButton}
             onPress={onClose}
           >
@@ -77,18 +87,29 @@ export const QRScanner: React.FC<QRScannerProps> = ({
 
   if (!permission.granted) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View
+        accessible={true}
+        accessibilityLabel="Camera access denied"
+        style={[styles.container, { backgroundColor: colors.background }]}
+      >
         <View style={styles.centerContent}>
           <Text style={[styles.permissionText, { color: colors.text }]}>
             Camera access denied
           </Text>
           <TouchableOpacity
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Enable camera access"
+            accessibilityHint="Requests camera permission again"
             style={[styles.permissionButton, { backgroundColor: colors.primary }]}
             onPress={() => requestPermission()}
           >
             <Text style={styles.buttonText}>Enable Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Close scanner"
             style={styles.closeButton}
             onPress={onClose}
           >
@@ -100,7 +121,7 @@ export const QRScanner: React.FC<QRScannerProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View accessible={true} accessibilityLabel="QR code scanner active" style={styles.container}>
       {isInitializing && <ActivityIndicator size="large" color="#3737A4" style={styles.loadingIndicator} />}
       
       <CameraView
@@ -112,17 +133,12 @@ export const QRScanner: React.FC<QRScannerProps> = ({
         }}
       />
 
-      {/* Overlay */}
       <View style={styles.overlay}>
-        {/* Top section */}
         <View style={[styles.overlaySection, { height: (height - SCAN_AREA_SIZE) / 2 }]} />
 
-        {/* Middle section with scan area */}
         <View style={styles.middleSection}>
-          {/* Left */}
           <View style={[styles.overlaySide, { width: (width - SCAN_AREA_SIZE) / 2 }]} />
 
-          {/* Scan area frame */}
           <View style={styles.scanAreaContainer}>
             <View style={[styles.corner, styles.cornerTopLeft]} />
             <View style={[styles.corner, styles.cornerTopRight]} />
@@ -130,18 +146,21 @@ export const QRScanner: React.FC<QRScannerProps> = ({
             <View style={[styles.corner, styles.cornerBottomRight]} />
           </View>
 
-          {/* Right */}
           <View style={[styles.overlaySide, { width: (width - SCAN_AREA_SIZE) / 2 }]} />
         </View>
 
-        {/* Bottom section */}
         <View style={[styles.overlaySection, { height: (height - SCAN_AREA_SIZE) / 2 }]} />
       </View>
 
-      {/* Top header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>{title}</Text>
+        <Text accessible={true} accessibilityRole="header" style={styles.headerTitle}>
+          {title}
+        </Text>
         <TouchableOpacity
+          accessible={true}
+          accessibilityRole="button"
+          accessibilityLabel="Close scanner"
+          accessibilityHint="Returns to previous screen"
           style={styles.headerCloseButton}
           onPress={onClose}
         >
@@ -149,9 +168,12 @@ export const QRScanner: React.FC<QRScannerProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* Bottom hint */}
       <View style={styles.hintContainer}>
-        <Text style={styles.hintText}>
+        <Text
+          accessible={true}
+          accessibilityLiveRegion="polite"
+          style={styles.hintText}
+        >
           {scanned ? 'QR Code detected!' : 'Position the QR code within the frame'}
         </Text>
       </View>
