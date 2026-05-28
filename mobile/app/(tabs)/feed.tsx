@@ -1,3 +1,10 @@
+import { FlatList, View, Text } from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { HuntyRefreshControl } from "@/components/HuntyRefreshControl";
+import { useRefreshByUser } from "@/hooks/useRefreshByUser";
+import type { StoredHunt } from "@lib/types";
+
+const fetchHunts = async (): Promise<StoredHunt[]> => [];
 import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
@@ -29,6 +36,7 @@ export default function HomeFeed() {
   const router = useRouter();
   const { colors } = useTheme();
   const { data: hunts, refetch } = useQuery({
+    queryKey: ["hunts"],
     queryKey: ['feed-hunts'],
     queryFn: fetchHunts,
   });
@@ -52,6 +60,23 @@ export default function HomeFeed() {
   }, [hunts]);
 
   return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <FlatList
+        data={hunts}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              padding: 16,
+              borderBottomWidth: 1,
+              borderBottomColor: "#f1f5f9",
+            }}
+          >
+            <Text style={{ color: "#0f172a", fontWeight: "600" }}>
+              {item.title}
+            </Text>
+          </View>
+        )}
     <ThemedView style={[styles.container, { backgroundColor: colors.background }]}> 
       <ScrollView
         contentContainerStyle={styles.content}
@@ -62,6 +87,15 @@ export default function HomeFeed() {
             onRefresh={onRefresh}
           />
         }
+        ListEmptyComponent={
+          <Text style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
+            No active hunts found.
+          </Text>
+        }
+      />
+    </View>
+  );
+}
       >
         <ThemedCustomText variant="h2" weight="800" style={styles.headerTitle}>Home Feed</ThemedCustomText>
         <ThemedCustomText variant="body" style={styles.headerSubtitle}>

@@ -7,6 +7,7 @@ import {
   PressableProps,
   ActivityIndicator,
 } from 'react-native';
+import { useTheme } from '@providers/ThemeProvider';
 import { useTheme } from '../../providers/ThemeProvider';
 import { ThemedCustomText } from './ThemedCustomText';
 

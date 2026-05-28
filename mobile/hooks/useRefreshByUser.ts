@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { useCallback, useState } from 'react';
 
 export function useRefreshByUser(refetch: () => Promise<unknown>) {
@@ -12,6 +13,7 @@ export function useRefreshByUser(refetch: () => Promise<unknown>) {
     }
   }, [refetch]);
 
+  return { isRefreshing, onRefresh };
   return {
     isRefreshing,
     onRefresh,
