@@ -7,7 +7,7 @@ import { ArrowLeft, Pencil, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardTitle } from "@/components/ui/card"
 import { Header } from "@/components/Header"
-import { useFreighterWallet } from "@/hooks/useFreighterWallet"
+import { useWallet } from "@/lib/context/WalletContext"
 import type { StoredHunt } from "@/lib/types"
 import { getHuntsByCreator } from "@/lib/huntStore"
 
@@ -30,7 +30,7 @@ function StatusBadge({ status }: { status: StoredHunt["status"] }) {
 
 export default function CreatorPage() {
   const router = useRouter()
-  const { connected, publicKey, connect } = useFreighterWallet()
+  const { connected, publicKey, connect } = useWallet()
   const [hunts, setHunts] = useState<StoredHunt[]>([])
 
   const loadHunts = useCallback(() => {

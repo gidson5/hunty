@@ -95,6 +95,11 @@ export type AddClueResult = {
   txHash: string
 }
 
+export type ExtendHuntResult = {
+  txHash: string
+  newEndTime: number
+}
+
 // ─── Leaderboard ─────────────────────────────────────────────────────────────
 
 export type LeaderboardEntry = {

@@ -12,11 +12,6 @@ export type HuntStoreSnapshot = {
   clues: Clue[]
 }
 
-export type HuntStoreSnapshot = {
-  hunts: StoredHunt[]
-  clues: Clue[]
-}
-
 const STORAGE_KEY = "hunty_hunts"
 const CLUES_KEY = "hunty_clues"
 
@@ -141,6 +136,12 @@ export function getHuntsByCreator(creator?: string): StoredHunt[] {
 /** Update a hunt's status (e.g. Draft → Active after activate_hunt). */
 export function updateHuntStatus(huntId: number, status: HuntStatus): void {
   const hunts = readHunts().map((h) => (h.id === huntId ? { ...h, status } : h))
+  writeHunts(hunts)
+}
+
+/** Update a hunt's end time (e.g. after extend_end_time). */
+export function updateHuntEndTime(huntId: number, newEndTime: number): void {
+  const hunts = readHunts().map((h) => (h.id === huntId ? { ...h, endTime: newEndTime } : h))
   writeHunts(hunts)
 }
 

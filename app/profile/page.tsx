@@ -6,7 +6,7 @@ import { formatISOString } from "@/lib/dateUtils"
 import { Header } from "@/components/Header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useFreighterWallet, shortenAddress } from "@/hooks/useFreighterWallet"
+import { useWallet, shortenAddress } from "@/lib/context/WalletContext"
 import { NftGallery } from "@/components/NftGallery"
 import type { NftRewardDetail } from "@/components/NftDetailModal"
 
@@ -117,7 +117,7 @@ async function fetchPlayerRewards(address: string): Promise<NftReward[]> {
 
 
 export default function UserProfilePage() {
-  const { connected, publicKey } = useFreighterWallet()
+  const { connected, publicKey } = useWallet()
   const [hunts, setHunts] = useState<PlayerHuntProgress[]>([])
   const [nftRewards, setNftRewards] = useState<NftReward[]>([])
   const [isLoading, setIsLoading] = useState(false)

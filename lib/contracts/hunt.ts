@@ -5,9 +5,9 @@ import { normalizeNetworkError, AnswerIncorrectError } from "./errors"
 import { SOROBAN_RPC_URL, NETWORK_PASSPHRASE } from "./config"
 import { getActiveWalletAdapter } from "@/lib/walletAdapter"
 
-import type { ClueInfo, HuntInfo, CreateHuntResult, SubmitAnswerResult, ActivateHuntResult, AddClueResult, LeaderboardEntry, FastestPlayerEntry } from "@/lib/types"
+import type { ClueInfo, HuntInfo, CreateHuntResult, SubmitAnswerResult, ActivateHuntResult, AddClueResult, ExtendHuntResult, LeaderboardEntry, FastestPlayerEntry } from "@/lib/types"
 
-export type { ClueInfo, HuntInfo, CreateHuntResult, SubmitAnswerResult, ActivateHuntResult, AddClueResult, LeaderboardEntry, FastestPlayerEntry }
+export type { ClueInfo, HuntInfo, CreateHuntResult, SubmitAnswerResult, ActivateHuntResult, AddClueResult, ExtendHuntResult, LeaderboardEntry, FastestPlayerEntry }
 
 // AnswerIncorrectError is re-exported from the central errors module for
 // backwards-compatible imports (e.g. `import { AnswerIncorrectError } from "@/lib/contracts/hunt"`).
@@ -163,6 +163,46 @@ export async function addClue(
   }
   if (!res2?.hash) throw new Error("Transaction submission failed")
   return { txHash: res2.hash }
+}
+
+/**
+ * Calls the smart contract's extend_end_time(hunt_id: u64, new_end_time: u64) to extend a hunt's duration.
+ * Requires wallet and Soroban RPC.
+ */
+export async function extendEndTime(
+  huntId: number,
+  newEndTime: number
+): Promise<ExtendHuntResult> {
+  if (typeof window === "undefined") throw new Error("Browser environment required")
+
+  const server = new Server(SOROBAN_RPC_URL)
+  const wallet = getActiveWalletAdapter()
+  const publicKey = await wallet.getPublicKey()
+
+  const account = (await withSorobanRpcRetry(() => server.getAccount(publicKey))) as Account
+  const payload = JSON.stringify({
+    action: "extend_end_time",
+    hunt_id: huntId,
+    new_end_time: newEndTime,
+  })
+  const key = `extend_end_time:${Date.now()}`
+  const op = Operation.manageData({ name: key, value: payload })
+
+  const tx = new TransactionBuilder(account, {
+    fee: "100",
+    networkPassphrase: NETWORK_PASSPHRASE,
+  })
+    .addOperation(op)
+    .setTimeout(180)
+    .build()
+
+  const signedXdr = await wallet.signTransaction(tx.toXDR())
+
+  const res = (await withSorobanRpcRetry(() => server.submitTransaction(signedXdr))) as {
+    hash?: string
+  }
+  if (!res?.hash) throw new Error("Transaction submission failed")
+  return { txHash: res.hash, newEndTime }
 }
 
 /**
