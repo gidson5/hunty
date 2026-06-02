@@ -363,7 +363,7 @@ export const HuntCards: React.FC<HuntCardsProps> = ({
           </div>
         )}
         {!huntEnded && !success && isPending && (
-          <p className="text-center text-slate-400 dark:text-slate-500 text-xs sm:text-sm">Submitting...</p>
+          <p className="text-center text-slate-400 dark:text-slate-400 text-xs sm:text-sm">Submitting...</p>
         )}
         {!huntEnded && !success && !isPending && error && (
           <p className="text-center text-red-500 dark:text-red-400 font-semibold text-xs sm:text-sm">{error}</p>
