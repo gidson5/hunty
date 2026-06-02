@@ -20,8 +20,9 @@ export function HuntCoverImage({ src, alt, className }: HuntCoverImageProps) {
           src="/static-images/image1.png"
           alt={alt}
           fill
+          loading="lazy"
           className="object-cover"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           unoptimized
         />
       </div>
@@ -34,8 +35,9 @@ export function HuntCoverImage({ src, alt, className }: HuntCoverImageProps) {
         src={resolveImageSrc(src, gatewayIdx)}
         alt={alt}
         fill
+        loading="lazy"
         className="object-cover"
-        sizes="(max-width: 768px) 100vw, 33vw"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         onError={() => {
           if (gatewayIdx < GATEWAY_COUNT - 1) {
             setGatewayIdx((idx) => idx + 1)

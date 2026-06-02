@@ -269,8 +269,10 @@ export const HuntCards: React.FC<HuntCardsProps> = ({
             <Image
               src={resolveImageSrc(hunt.link || hunt.image || "", imgGatewayIdx)}
               alt="hunt"
-              width={140}
-              height={140}
+              width={180}
+              height={180}
+              loading="lazy"
+              sizes="180px"
               onError={() => {
                 if (imgGatewayIdx < GATEWAY_COUNT - 1) {
                   setImgGatewayIdx((i) => i + 1)
@@ -280,7 +282,15 @@ export const HuntCards: React.FC<HuntCardsProps> = ({
               className="w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] object-contain print:w-64 print:h-auto print:rounded-xl"
             />
           ) : (
-            <Image src={picture} alt="hunt" width={140} height={140} className="w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] object-contain print:w-64 print:h-auto print:rounded-xl" />
+            <Image
+              src={picture}
+              alt="hunt"
+              width={180}
+              height={180}
+              loading="lazy"
+              sizes="180px"
+              className="w-[140px] h-[140px] sm:w-[180px] sm:h-[180px] object-contain print:w-64 print:h-auto print:rounded-xl"
+            />
           )}
         </div>
       </div>
