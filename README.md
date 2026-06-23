@@ -62,7 +62,16 @@ pnpm install
 expo start
 ```
 
-4. Run tests:
+4. Mobile EAS Build & OTA setup:
+
+```bash
+cd mobile
+pnpm run build:android:dev
+pnpm run build:ios:preview
+pnpm run update:preview
+```
+
+5. Run tests:
 
 ```bash
 pnpm test
