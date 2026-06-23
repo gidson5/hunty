@@ -40,7 +40,7 @@ vi.mock("@/lib/crypto", () => ({
 }))
 
 vi.mock("@/lib/txToast", () => ({
-  withTransactionToast: vi.fn().mockImplementation(async (fn: Function) => fn(() => {})),
+  withTransactionToast: vi.fn().mockImplementation(async (fn: () => Promise<void>) => fn()),
 }))
 
 vi.mock("@/lib/logger", () => ({
@@ -49,6 +49,7 @@ vi.mock("@/lib/logger", () => ({
 
 vi.mock("next/image", () => ({
   default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    // eslint-disable-next-line @next/next/no-img-element -- test mock for next/image, not rendered in app
     <img {...props} alt={props.alt ?? ""} />
   ),
 }))

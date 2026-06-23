@@ -239,6 +239,7 @@ export function HuntForm({ hunt, onUpdate, onRemove, huntId, onCluesSaved, onIma
             size="icon"
             onClick={triggerFileInput}
             disabled={isUploading}
+            aria-label="Upload hunt cover image"
             className="bg-gradient-to-b from-[#3737A4] to-[#0C0C4F] hover:bg-slate-700 rounded-[12px] text-white cursor-pointer disabled:opacity-50"
           >
             {isUploading ? (
@@ -255,6 +256,7 @@ export function HuntForm({ hunt, onUpdate, onRemove, huntId, onCluesSaved, onIma
             onChange={handleImageUpload}
             accept="image/*"
             className="hidden"
+            aria-label="Upload hunt cover image"
           />
           {hunt.image && (
             <div className="absolute -right-2 -top-2 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">

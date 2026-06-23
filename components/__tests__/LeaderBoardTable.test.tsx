@@ -1,4 +1,5 @@
 import React from "react"
+import React from "react"
 import { render, screen, waitFor } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { LeaderboardTable } from "../LeaderBoardTable"
@@ -31,7 +32,7 @@ describe("LeaderboardTable", () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(get_hunt_leaderboard as any).mockResolvedValue(mockLeaderboardData)
+    ;(get_hunt_leaderboard as ReturnType<typeof vi.fn>).mockResolvedValue(mockLeaderboardData)
   })
 
   it("renders loading skeleton when isLoading is true and data is empty", () => {
@@ -206,7 +207,7 @@ describe("LeaderboardTable", () => {
     ]
 
     const renderSpy = vi.fn()
-    const TestWrapper = (props: any) => {
+    const TestWrapper = (props: React.ComponentProps<typeof LeaderboardTable>) => {
       renderSpy()
       return <LeaderboardTable {...props} />
     }
