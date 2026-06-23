@@ -28,6 +28,7 @@ import { toast } from "sonner"
 import { ACHIEVEMENTS } from "@/lib/achievements/config"
 import { checkAndAwardAchievements } from "@/lib/achievements/service"
 import { logger } from "@/lib/logger"
+import { queryCachePolicy, queryKeys } from "@/lib/queryKeys"
 
 interface GameCompleteModalProps {
   isOpen: boolean
@@ -67,10 +68,13 @@ export function GameCompleteModal({
   const [newAchievements, setNewAchievements] = useState<string[]>([])
 
   const { data: registrationStatus } = useQuery({
-    queryKey: ["registrationStatus", huntId, playerAddress],
+    queryKey: queryKeys.registration.status(huntId, playerAddress),
     queryFn: () => (huntId && playerAddress ? checkRegistrationStatus(huntId, playerAddress) : null),
     enabled: isOpen && !!huntId && !!playerAddress,
-    staleTime: SOROBAN_READ_STALE_TIME_MS,
+    staleTime: Math.max(SOROBAN_READ_STALE_TIME_MS, queryCachePolicy.registrationStatus.staleTime),
+    gcTime: queryCachePolicy.registrationStatus.gcTime,
+    refetchInterval: queryCachePolicy.registrationStatus.refetchInterval,
+    refetchIntervalInBackground: true,
   });
 
   const playerProgress = registrationStatus?.progressData ? {
