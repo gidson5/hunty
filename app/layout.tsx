@@ -1,9 +1,12 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 import "./globals.css"
 import { hankenGrotesk } from "@/lib/font"
 import { TxToaster } from "@/components/TxToaster"
 import Providers from "./providers"
+import { PageTransitionWrapper } from "@/components/PageTransitionWrapper"
+import { PageSkeleton } from "@/components/PageSkeleton"
 
 export const metadata: Metadata = {
   title: "Hunty - Decentralized Scavenger Hunt Game",
@@ -75,8 +78,20 @@ export default function RootLayout({
             Skip to content
           </a>
           <TxToaster />
+          {/*
+           * The <main> tag is the animation boundary.
+           * PageTransitionWrapper lives inside Providers (client tree) so
+           * it can read pathname and run AnimatePresence.
+           * Suspense catches any async page segments and shows the skeleton
+           * while they stream in — the same skeleton is also visible during
+           * the brief window between route change and first paint.
+           */}
           <main id="main-content">
-            {children}
+            <Suspense fallback={<PageSkeleton />}>
+              <PageTransitionWrapper>
+                {children}
+              </PageTransitionWrapper>
+            </Suspense>
           </main>
         </Providers>
       </body>

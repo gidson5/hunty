@@ -139,7 +139,19 @@
 .skip-to-content:focus {
   top: 1rem;
 }
+/* ─── Page transition ──────────────────────────────────────────────────────
+   The motion.div rendered by PageTransitionWrapper.
+   will-change promotes the layer early so the browser doesn't repaint the
+   full page on the first frame of each animation.
+   -------------------------------------------------------------------------- */
+[data-page-transition] {
+  will-change: opacity, transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  /* CSS-level safety net on top of the JS useReducedMotion hook.
+     Framer Motion respects the hook, but this catches any edge cases
+     where the component hasn't hydrated yet. */
   *,
   *::before,
   *::after {
