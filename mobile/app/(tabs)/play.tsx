@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import NetInfo from '@react-native-community/netinfo';
+import { OfflineBanner } from '@components/OfflineBanner';
+import { queueClueAnswer } from '@store/huntStore';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedButton, ThemedCustomText, ThemedView } from '@components/themed';
@@ -12,6 +15,15 @@ import { ClueMarkdownRenderer } from '@components/ClueMarkdownRenderer';
 import { verifyClueGeofence } from '@/lib/locationGate';
 
 export default function PlayScreen() {
+  // Network status
+  const [isOnline, setIsOnline] = useState(true);
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOnline(state.isConnected && state.isInternetReachable);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const router = useRouter();
   const { colors } = useTheme();
   const { showToast } = useToast();
@@ -28,6 +40,7 @@ export default function PlayScreen() {
   const [clues, setClues] = useState<Clue[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  // Removed duplicate showToast declaration
 
   useEffect(() => {
     if (!currentProgress?.hunt_id) {
@@ -70,6 +83,18 @@ export default function PlayScreen() {
 
   const handleSubmit = async () => {
     if (!activeClue || isSubmitting) {
+      return;
+    }
+
+    // If offline, queue the answer and update progress locally
+    if (!isOnline) {
+      await queueClueAnswer(currentProgress.hunt_id, activeClue.id, answer.trim());
+      // Mark clue completed locally
+      markClueCompleted(currentProgress.hunt_id, activeClueIndex);
+      // Advance to next clue
+      updateClueIndex(activeClueIndex + 1);
+      setAnswer('');
+      showToast({ message: 'Answer queued. It will be submitted when back online.', type: 'info' });
       return;
     }
 
@@ -163,6 +188,8 @@ export default function PlayScreen() {
         })}
 
         {!allSolved && activeClue ? (
+        <>
+          <OfflineBanner />
           <View style={[styles.answerPanel, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <ThemedCustomText variant="h3" weight="700">
               Submit answer
