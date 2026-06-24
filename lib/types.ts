@@ -208,6 +208,21 @@ export interface RewardReceipt {
   createdAt: number
 }
 
+export type RewardHistoryType = "XLM" | "NFT"
+
+export interface RewardHistoryEntry {
+  id: string
+  type: RewardHistoryType
+  amount?: number
+  description: string
+  txHash: string
+  earnedAt: string
+  huntId?: number
+  huntName?: string
+  recipient?: string
+  explorerUrl: string
+}
+
 // ─── Activity Feed ───────────────────────────────────────────────────────────
 
 export type ActivityEventType = "HuntCompleted" | "ClueCompleted"
