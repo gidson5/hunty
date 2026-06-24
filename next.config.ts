@@ -1,4 +1,18 @@
 import type { NextConfig } from "next";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+});
 
 const nextConfig: NextConfig = {
   images: {
@@ -49,28 +63,28 @@ const nextConfig: NextConfig = {
     const cspDirectives = [
       // Script sources: only self and trusted inline scripts
       `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
-      
+
       // Style sources: self and inline styles
       `style-src 'self' 'unsafe-inline'`,
-      
+
       // Image sources: self and IPFS gateways
       `img-src 'self' data: https: ${ipfsGateways.join(" ")}`,
-      
+
       // Connect sources: self, Soroban RPC, IPFS, and APIs
       `connect-src 'self' ${trustedApis.join(" ")} wss: https:`,
-      
+
       // Font sources
       `font-src 'self' data: https:`,
-      
+
       // Frame ancestors - prevent clickjacking
       `frame-ancestors 'none'`,
-      
+
       // Default fallback
       `default-src 'self'`,
-      
+
       // Base URI restriction
       `base-uri 'self'`,
-      
+
       // Form action restriction
       `form-action 'self'`,
     ];
@@ -112,4 +126,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
