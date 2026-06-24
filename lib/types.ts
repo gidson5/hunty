@@ -18,6 +18,12 @@ export interface StoredHunt {
   rewardType: "XLM" | "NFT" | "Both"
   /** Total reward pool value used for creator-side sorting. */
   rewardPool?: number
+  /** Current available balance in the creator's reward pool (XLM). */
+  poolBalance?: number
+  /** Optional distribution plan for rewards (e.g., 1st/2nd/3rd place amounts). */
+  rewardDistribution?: Reward[]
+  /** Creator-configured low-balance threshold (XLM) to show warnings. */
+  poolLowBalanceThreshold?: number
   /** Creator-side participant count snapshot for dashboard sorting. */
   playerCount?: number
   /** Unix timestamp in seconds when the hunt draft was created locally. */
@@ -93,6 +99,12 @@ export interface ClueRow {
 
 export type CreateHuntResult = {
   txHash: string
+}
+
+export type ClaimRewardResult = {
+  txHash: string
+  /** ipfs:// URI for the SEP-0039 compliant metadata JSON uploaded before minting. */
+  metadataUri: string
 }
 
 export type SubmitAnswerResult = {
@@ -181,6 +193,14 @@ export interface RewardPlayerProgress {
   hunt_id?: number | string
 }
 
+// ─── Player Profile ──────────────────────────────────────────────────────────
+
+export interface PlayerProfile {
+  address: string
+  displayName?: string
+  avatarUrl?: string
+}
+
 // ─── Activity Feed ───────────────────────────────────────────────────────────
 
 export type ActivityEventType = "HuntCompleted" | "ClueCompleted"
@@ -189,6 +209,8 @@ export interface ActivityEvent {
   id: string
   /** Full Stellar G-address of the participant */
   address: string
+  /** Optional display name resolved from the player's profile */
+  displayName?: string
   huntTitle: string
   huntId: number
   timestamp: number
@@ -295,6 +317,8 @@ export interface NftRewardDetail {
   claimed: boolean
   huntName?: string
   attributes?: NftAttribute[]
+  /** ipfs:// URI pointing to the SEP-0039 metadata JSON file for this NFT. */
+  metadataUri?: string
 }
 
 export interface ProfileSummary {

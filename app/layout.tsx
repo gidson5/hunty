@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { hankenGrotesk } from "@/lib/font"
 import { TxToaster } from "@/components/TxToaster"
+import { SrAnnouncer } from "@/components/SrAnnouncer"
 import Providers from "./providers"
 
 export const metadata: Metadata = {
@@ -75,6 +76,7 @@ export default function RootLayout({
             Skip to content
           </a>
           <TxToaster />
+          <SrAnnouncer />
           <main id="main-content">
             {children}
           </main>
