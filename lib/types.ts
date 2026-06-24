@@ -181,6 +181,14 @@ export interface RewardPlayerProgress {
   hunt_id?: number | string
 }
 
+// ─── Player Profile ──────────────────────────────────────────────────────────
+
+export interface PlayerProfile {
+  address: string
+  displayName?: string
+  avatarUrl?: string
+}
+
 // ─── Activity Feed ───────────────────────────────────────────────────────────
 
 export type ActivityEventType = "HuntCompleted" | "ClueCompleted"
@@ -189,6 +197,8 @@ export interface ActivityEvent {
   id: string
   /** Full Stellar G-address of the participant */
   address: string
+  /** Optional display name resolved from the player's profile */
+  displayName?: string
   huntTitle: string
   huntId: number
   timestamp: number
