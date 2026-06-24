@@ -3,10 +3,13 @@ import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ThemedButton, ThemedCustomText, ThemedView } from '@components/themed';
 import { EmptyState } from '@components/EmptyState';
+import { QRScanner } from '@components/QRScanner';
 import { useTheme } from '@providers/ThemeProvider';
 import { getHuntClues } from '@store/huntStore';
 import { usePlayerStore, useWalletStore } from '@store/useStore';
 import type { Clue } from '@lib/types';
+import { verifyQrAgainstClue } from '@lib/qrCodeDecryptor';
+import { matchesClueAnswer } from '@lib/clueAnswerVerification';
 import { useToast } from '@providers/ToastProvider';
 import { ClueMarkdownRenderer } from '@components/ClueMarkdownRenderer';
 import { verifyClueGeofence } from '@/lib/locationGate';
@@ -27,6 +30,7 @@ export default function PlayScreen() {
   const [answer, setAnswer] = useState('');
   const [clues, setClues] = useState<Clue[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -68,8 +72,8 @@ export default function PlayScreen() {
     return `Clue ${activeClueIndex + 1} of ${clues.length}`;
   }, [activeClueIndex, allSolved, clues.length]);
 
-  const handleSubmit = async () => {
-    if (!activeClue || isSubmitting) {
+  const submitClueAnswer = async (submittedAnswer: string, fromQr = false) => {
+    if (!activeClue || !currentProgress?.hunt_id || isSubmitting) {
       return;
     }
 
@@ -92,7 +96,14 @@ export default function PlayScreen() {
         return;
       }
 
-      if (answer.trim().toLowerCase() !== activeClue.answer.toLowerCase()) {
+      if (fromQr) {
+        const qrCheck = await verifyQrAgainstClue(submittedAnswer, activeClue, currentProgress.hunt_id);
+        if (!qrCheck.match) {
+          showToast({ message: qrCheck.reason, type: 'error' });
+          setError(qrCheck.reason);
+          return;
+        }
+      } else if (!(await matchesClueAnswer(submittedAnswer, activeClue, currentProgress.hunt_id))) {
         setError('Incorrect answer. Review the clue and try again.');
         return;
       }
@@ -118,6 +129,14 @@ export default function PlayScreen() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async () => {
+    await submitClueAnswer(answer);
+  };
+
+  const handleQrScan = async (data: string) => {
+    await submitClueAnswer(data, true);
   };
 
   return (
@@ -195,10 +214,23 @@ export default function PlayScreen() {
               fullWidth
               onPress={handleSubmit}
             />
+            <ThemedButton
+              text="Scan QR checkpoint"
+              variant="secondary"
+              fullWidth
+              onPress={() => setScannerOpen(true)}
+            />
             <ThemedButton text="Abandon hunt" variant="ghost" fullWidth onPress={clearProgress} />
           </View>
         ) : null}
       </ScrollView>
+
+      <QRScanner
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onScan={handleQrScan}
+        title="Scan checkpoint QR"
+      />
     </ThemedView>
   );
 }
