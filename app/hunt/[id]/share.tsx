@@ -22,6 +22,7 @@ import { GameCompleteModal } from "@/components/GameCompleteModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { debounce } from "@/lib/debounce";
 import { REGISTRATION_STATUS_DEBOUNCE_MS } from "@/lib/soroban/queryConfig";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface HuntDetailProps {
   hunt: StoredHunt;
@@ -269,7 +270,9 @@ export default function HuntShare({ hunt }: HuntDetailProps) {
               onGameComplete={(score) => {
                 // Refresh registration status to show completion/rewards
                 clearRegistrationCache(hunt.id, connectedPublicKey);
-                queryClient.invalidateQueries({ queryKey: ["registrationStatus", hunt.id, connectedPublicKey] });
+                queryClient.invalidateQueries({
+                  queryKey: queryKeys.registration.status(hunt.id, connectedPublicKey),
+                });
                 setCompletionScore(score);
                 setIsCompleteModalOpen(true);
               }}

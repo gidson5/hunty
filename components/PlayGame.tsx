@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Header } from "@/components/Header";
 import { PlayerProgressPanel } from "@/components/PlayerProgressPanel";
 import { get_clue_info, get_hunt } from "@/lib/contracts/hunt";
+import { queryCachePolicy, queryKeys } from "@/lib/queryKeys";
 import { SOROBAN_READ_STALE_TIME_MS } from "@/lib/soroban/queryConfig";
 
 import { HuntCards } from "./HuntCards";
@@ -50,7 +51,7 @@ export function PlayGame({
     error: queryError,
     refetch,
   } = useQuery({
-    queryKey: ["huntClues", huntId],
+    queryKey: queryKeys.hunts.clues(huntId),
     queryFn: async () => {
       if (huntId == null) return null;
       const huntInfo = await get_hunt(huntId);
@@ -73,7 +74,10 @@ export function PlayGame({
       return { clues, huntInfo };
     },
     enabled: huntId != null,
-    staleTime: SOROBAN_READ_STALE_TIME_MS,
+    staleTime: Math.max(SOROBAN_READ_STALE_TIME_MS, queryCachePolicy.hunts.staleTime),
+    gcTime: queryCachePolicy.hunts.gcTime,
+    refetchInterval: queryCachePolicy.hunts.refetchInterval,
+    refetchIntervalInBackground: true,
   });
 
   const error: string | null = queryError instanceof Error ? queryError.message : queryError ? "Failed to fetch clues" : null;

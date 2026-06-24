@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useWindowVirtualizer } from "@tanstack/react-virtual"
 import Image from "next/image"
 import Link from "next/link"
@@ -12,7 +12,7 @@ import { X, ArrowRight, Trophy } from "lucide-react"
 import { Card, CardDescription, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Header } from "@/components/Header"
-import { getAllHunts, type StoredHunt } from "@/lib/huntStore"
+import { getAllHunts, getHunt, type StoredHunt } from "@/lib/huntStore"
 import { LeaderboardTable } from "@/components/LeaderBoardTable"
 import { HuntOfTheWeekBanner } from "@/components/HuntOfTheWeekBanner"
 import { hankenGrotesk } from "@/lib/font"
@@ -25,6 +25,7 @@ import { usePlayerCounts } from "@/hooks/usePlayerCounts"
 import { useRecentlyCompleted } from "@/hooks/useRecentlyCompleted"
 import { RecentlyCompletedSection } from "@/components/RecentlyCompletedSection"
 import type { PlayerCountResult } from "@/lib/types"
+import { queryCachePolicy, queryKeys } from "@/lib/queryKeys"
 
 interface WalletOption {
   id: string
@@ -222,6 +223,7 @@ function VirtualizedActiveHuntsGrid({
 }
 
 export default function GameArcade() {
+  const queryClient = useQueryClient()
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
   const [isConnectingWallet, setIsConnectingWallet] = useState(false)
   const [displayName, setDisplayName] = useState("")
@@ -280,11 +282,23 @@ export default function GameArcade() {
   }, [statusFilter])
 
   const { data: hunts = [], isLoading: isLoadingHunts } = useQuery({
-    queryKey: ["activeHunts"],
+    queryKey: queryKeys.hunts.active(),
     queryFn: async () => fetchAllHunts(),
-    staleTime: 60_000,
-    gcTime: 300_000,
+    staleTime: queryCachePolicy.hunts.staleTime,
+    gcTime: queryCachePolicy.hunts.gcTime,
+    refetchInterval: queryCachePolicy.hunts.refetchInterval,
+    refetchIntervalInBackground: true,
   })
+
+  useEffect(() => {
+    hunts.slice(0, 6).forEach((hunt) => {
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.hunts.detail(hunt.id),
+        queryFn: () => getHunt(String(hunt.id)),
+        staleTime: queryCachePolicy.hunts.staleTime,
+      })
+    })
+  }, [hunts, queryClient])
 
   // Fetch player counts for all visible hunts. refetch is called on mount via
   // useEffect below to ensure counts are fresh on each arcade page load.
