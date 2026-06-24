@@ -8,6 +8,7 @@ import { ThemedButton, ThemedCustomText, ThemedView } from '@components/themed';
 import { EmptyState } from '@components/EmptyState';
 import { QRScanner } from '@components/QRScanner';
 import { useTheme } from '@providers/ThemeProvider';
+import { useHaptics } from '@hooks/useHaptics';
 import { getHuntClues } from '@store/huntStore';
 import { usePlayerStore, useWalletStore } from '@store/useStore';
 import type { Clue } from '@lib/types';
@@ -29,6 +30,7 @@ export default function PlayScreen() {
 
   const router = useRouter();
   const { colors } = useTheme();
+  const haptics = useHaptics();
   const { showToast } = useToast();
   const { network } = useWalletStore();
   const {
@@ -118,6 +120,7 @@ export default function PlayScreen() {
       const locationCheck = await verifyClueGeofence(activeClue);
       if (!locationCheck.allowed) {
         setError(locationCheck.reason);
+        haptics.triggerNotification('error');
         return;
       }
 
@@ -130,6 +133,7 @@ export default function PlayScreen() {
         }
       } else if (!(await matchesClueAnswer(submittedAnswer, activeClue, currentProgress.hunt_id))) {
         setError('Incorrect answer. Review the clue and try again.');
+        haptics.triggerNotification('error');
         return;
       }
 
@@ -137,6 +141,7 @@ export default function PlayScreen() {
       markClueCompleted(currentProgress.hunt_id, activeClueIndex);
 
       if (isLastClue) {
+        haptics.triggerImpact('heavy');
         markCompleted();
         router.push({
           pathname: '/transaction/pending',
@@ -147,6 +152,7 @@ export default function PlayScreen() {
           },
         });
       } else {
+        haptics.triggerNotification('success');
         updateClueIndex(activeClueIndex + 1);
       }
 

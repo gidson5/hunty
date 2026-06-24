@@ -10,12 +10,12 @@ import { CluesList } from '@components/CluesList';
 import type { Clue, StoredHunt } from '@lib/types';
 import { ClueMarkdownRenderer } from '@components/ClueMarkdownRenderer';
 import { verifyClueGeofence } from '@/lib/locationGate';
-import { matchesClueAnswer } from '@lib/clueAnswerVerification';
-import { verifyQrAgainstClue } from '@lib/qrCodeDecryptor';
+import { useHaptics } from '@hooks/useHaptics';
 
 export default function NestedScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const haptics = useHaptics();
   const { huntId, clueIndex } = useLocalSearchParams<{ huntId?: string; clueIndex?: string }>();
   const [hunt, setHunt] = useState<StoredHunt | null>(null);
   const [clues, setClues] = useState<Clue[]>([]);
@@ -68,6 +68,7 @@ export default function NestedScreen() {
       const locationCheck = await verifyClueGeofence(clue);
       if (!locationCheck.allowed) {
         Alert.alert("Location required", locationCheck.reason);
+        haptics.triggerNotification('error');
         return;
       }
 
@@ -79,14 +80,17 @@ export default function NestedScreen() {
         }
       } else if (!(await matchesClueAnswer(submittedAnswer, clue, hId))) {
         Alert.alert("Incorrect", "Try again");
+        haptics.triggerNotification('error');
         return;
       }
 
       markClueCompleted(hId, idx);
       if (isLast) {
+        haptics.triggerImpact('heavy');
         Alert.alert("Complete!", "You finished the hunt!");
         router.replace(`/details?huntId=${hId}`);
       } else {
+        haptics.triggerNotification('success');
         navigateToClue(idx + 1);
       }
     } finally {
