@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { HuntPageSkeletonLayout } from "@/components/LoadingSkeletons";
 import { Header } from "@/components/Header";
 import { PlayerProgressPanel } from "@/components/PlayerProgressPanel";
 import { get_clue_info, get_hunt } from "@/lib/contracts/hunt";
@@ -145,20 +145,7 @@ export function PlayGame({
 
   if (loading && !hasHunts) {
     return (
-      <div className="min-h-screen bg-gradient-to-tr from-blue-100 bg-purple-100 to-[#f9f9ff] flex items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-6 text-center rounded-3xl bg-white dark:bg-slate-900 px-8 py-10 shadow-lg border border-slate-100 dark:border-white/5">
-          <div className="space-y-3">
-            <Skeleton className="h-8 w-3/4 mx-auto bg-slate-100 dark:bg-slate-800" />
-            <Skeleton className="h-4 w-full bg-slate-100 dark:bg-slate-800" />
-            <Skeleton className="h-4 w-5/6 mx-auto bg-slate-100 dark:bg-slate-800" />
-          </div>
-          <div className="pt-4">
-            <Button variant="ghost" onClick={onExit} className="dark:text-slate-400 dark:hover:text-white">
-              Go Back
-            </Button>
-          </div>
-        </div>
-      </div>
+      <HuntPageSkeletonLayout />
     );
   }
 

@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { X, ArrowRight, Trophy } from "lucide-react"
 import { Card, CardDescription, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { HuntCardSkeletonGrid } from "@/components/LoadingSkeletons"
 import { Header } from "@/components/Header"
 import { getAllHunts, getHunt, type StoredHunt } from "@/lib/huntStore"
 import { LeaderboardTable } from "@/components/LeaderBoardTable"
@@ -641,7 +641,7 @@ export default function GameArcade() {
               </div>
 
               {isLoadingHunts ? (
-                <Skeleton className="h-4 w-24 bg-slate-200 dark:bg-slate-700" />
+                <div className="skeleton-shimmer h-4 w-24 rounded-md bg-slate-200 dark:bg-slate-700" />
               ) : (
                 <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider hidden xl:block">
                   {filteredHunts.length} result{filteredHunts.length === 1 ? "" : "s"}
@@ -651,24 +651,7 @@ export default function GameArcade() {
           </div>
 
           {isLoadingHunts ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 4 }).map((_, idx) => (
-                <Card
-                  key={idx}
-                  className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-                >
-                  <div className="p-5">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full mb-1" />
-                    <Skeleton className="h-4 w-5/6 mb-4" />
-                    <div className="flex items-center justify-between mt-4">
-                      <Skeleton className="h-6 w-20 rounded-full" />
-                      <Skeleton className="h-4 w-12" />
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <HuntCardSkeletonGrid />
           ) : filteredHunts.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/80 dark:bg-slate-800/50 py-10 text-center text-slate-600 dark:text-slate-400">
               {searchQuery ? "No hunts match your search query." : "No active hunts available right now."}{" "}
@@ -693,21 +676,7 @@ export default function GameArcade() {
           </div>
 
           {isLoadingHunts ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 4 }).map((_, idx) => (
-                <Card
-                  key={`inactive-loading-${idx}`}
-                  className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-                >
-                  <div className="p-5">
-                    <Skeleton className="h-6 w-2/3 mb-2" />
-                    <Skeleton className="h-4 w-full mb-1" />
-                    <Skeleton className="h-4 w-5/6 mb-4" />
-                    <Skeleton className="h-5 w-24 rounded-full" />
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <HuntCardSkeletonGrid />
           ) : inactiveHunts.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 py-10 text-center text-slate-600">
               No inactive hunts yet.

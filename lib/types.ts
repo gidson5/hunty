@@ -18,12 +18,12 @@ export interface StoredHunt {
   rewardType: "XLM" | "NFT" | "Both"
   /** Total reward pool value used for creator-side sorting. */
   rewardPool?: number
-  /** Current available balance in the creator's reward pool (XLM). */
-  poolBalance?: number
-  /** Optional distribution plan for rewards (e.g., 1st/2nd/3rd place amounts). */
-  rewardDistribution?: Reward[]
-  /** Creator-configured low-balance threshold (XLM) to show warnings. */
-  poolLowBalanceThreshold?: number
+  /** Per-place XLM reward buckets funded by the creator. */
+  rewards?: Reward[]
+  /** Escrow transaction hash proving the creator funded the XLM reward pool. */
+  rewardEscrowTxHash?: string
+  /** Amount still available in the XLM escrow. */
+  rewardEscrowBalance?: number
   /** Creator-side participant count snapshot for dashboard sorting. */
   playerCount?: number
   /** Unix timestamp in seconds when the hunt draft was created locally. */
@@ -193,12 +193,18 @@ export interface RewardPlayerProgress {
   hunt_id?: number | string
 }
 
-// ─── Player Profile ──────────────────────────────────────────────────────────
+export type RewardReceiptType = "deposit" | "distribution" | "claim" | "refund"
 
-export interface PlayerProfile {
-  address: string
-  displayName?: string
-  avatarUrl?: string
+export interface RewardReceipt {
+  id: string
+  huntId: number
+  type: RewardReceiptType
+  txHash: string
+  amount: number
+  from?: string
+  to?: string
+  rank?: number
+  createdAt: number
 }
 
 // ─── Activity Feed ───────────────────────────────────────────────────────────
