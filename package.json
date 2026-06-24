@@ -16,8 +16,7 @@
     "smoke": "playwright test --config=playwright.smoke.config.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:visual": "playwright test visual-regression",
-    "test:visual:update": "playwright test visual-regression --update-snapshots"
+    "perf:budget": "node scripts/check-performance-budgets.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -52,6 +51,9 @@
     "tailwind-merge": "^3.3.1",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
+    ,"isomorphic-dompurify": "^2.2.0",
+    "rehype-sanitize": "^5.0.0",
+    "web-vitals": "^5.3.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
