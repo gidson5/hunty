@@ -23,17 +23,48 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-    // ── Mobile Testing ──────────────────────────────────────────────
-    // Run same tests on iOS and Android to ensure responsive design
-    // and mobile user experience. Configured for CI efficiency.
     {
-      name: "Mobile Chrome",
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
+    {
+      name: "msedge",
+      use: { ...devices["Desktop Edge"], channel: "msedge" },
+    },
+    {
+      name: "iphone",
+      use: { ...devices["iPhone 13"] },
+    },
+    {
+      name: "pixel",
       use: { ...devices["Pixel 5"] },
     },
+    // Dark-mode / CSS-compat project (runs on Chromium emulation)
     {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
+      name: "chromium-dark",
+      use: { ...devices["Desktop Chrome"], colorScheme: "dark", reducedMotion: "reduce" },
     },
+    // Optional wallet-extension project: only enabled when WALLET_EXTENSION_PATH is set
+    ...(process.env.WALLET_EXTENSION_PATH
+      ? [
+          {
+            name: "chromium-wallet",
+            use: {
+              ...devices["Desktop Chrome"],
+              launchOptions: {
+                args: [
+                  `--disable-extensions-except=${process.env.WALLET_EXTENSION_PATH}`,
+                  `--load-extension=${process.env.WALLET_EXTENSION_PATH}`,
+                ],
+              },
+            },
+          },
+        ]
+      : []),
   ],
   webServer: {
     command: "pnpm dev",
