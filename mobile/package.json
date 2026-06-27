@@ -10,6 +10,7 @@
     "lint": "expo lint",
     "test": "jest --passWithNoTests",
     "store:validate": "node scripts/validate-store-metadata.js",
+    "store:generate": "node scripts/generate-store-assets.js",
     "test:e2e": "maestro test .maestro/flows/feed-and-wallet.yaml",
     "test:e2e:validate": "node scripts/validate-maestro-baseline.js"
   },
