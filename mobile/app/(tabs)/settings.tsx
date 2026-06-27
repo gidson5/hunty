@@ -121,9 +121,9 @@ export default function SettingsScreen() {
 
         <SettingsSection title="Wallet">
           <SettingsRow
-            icon="wallet-outline"
-            label="Connected Wallet"
-            description="View your linked address"
+            icon="shield-checkmark-outline"
+            label="Wallet Security"
+            description="Protect wallet actions with biometrics and PIN fallback"
             type="navigate"
             onPress={() => router.push('/settings/wallet')}
           />

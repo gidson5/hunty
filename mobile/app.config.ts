@@ -49,6 +49,7 @@ export default {
       supportsTablet: true,
       infoPlist: {
         UIViewControllerBasedStatusBarAppearance: true,
+        NSFaceIDUsageDescription: 'Use Face ID to unlock your Hunty wallet securely.',
         LSApplicationQueriesSchemes: [
           "wc",
           "rainbow",
@@ -63,6 +64,7 @@ export default {
     },
     android: {
       package: config.androidPackage,
+      permissions: ['USE_BIOMETRIC', 'USE_FINGERPRINT'],
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#1f2937",

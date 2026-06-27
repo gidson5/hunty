@@ -18,6 +18,7 @@ interface ThemedButtonProps extends PressableProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
+  isLoading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
   icon?: React.ReactNode;
@@ -73,6 +74,7 @@ export const ThemedButton: React.FC<ThemedButtonProps> = ({
   variant = 'primary',
   size = 'md',
   loading = false,
+  isLoading,
   disabled = false,
   fullWidth = false,
   icon,
@@ -82,6 +84,7 @@ export const ThemedButton: React.FC<ThemedButtonProps> = ({
   accessibilityHint,
   ...otherProps
 }) => {
+  const loadingState = isLoading ?? loading;
   const [pressed, setPressed] = useState(false);
   const { colors } = useTheme();
 
@@ -110,9 +113,9 @@ export const ThemedButton: React.FC<ThemedButtonProps> = ({
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? text}
       accessibilityHint={accessibilityHint}
-      accessibilityState={{ disabled: disabled || loading, busy: loading }}
+      accessibilityState={{ disabled: disabled || loadingState, busy: loadingState }}
       onPress={(e) => {
-        if (!disabled && !loading && onPress) {
+        if (!disabled && !loadingState && onPress) {
           onPress(e);
         }
       }}
@@ -126,8 +129,8 @@ export const ThemedButton: React.FC<ThemedButtonProps> = ({
       ]}
       {...otherProps}
     >
-      {loading && <ActivityIndicator color={textColor} size={size === 'sm' ? 'small' : 'small'} />}
-      {!loading && icon && icon}
+      {loadingState && <ActivityIndicator color={textColor} size={size === 'sm' ? 'small' : 'small'} />}
+      {!loadingState && icon && icon}
       <ThemedCustomText
         variant={textSizeVariant[size]}
         color="text"
