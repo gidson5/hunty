@@ -1,4 +1,5 @@
 import '../global.css';
+import { useSyncQueue } from '@hooks/useSyncQueue';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack, type ErrorBoundaryProps, useRouter } from 'expo-router';
@@ -70,6 +71,8 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 }
 
 export default function RootLayout() {
+  // Initialize sync queue handling
+  useSyncQueue();
   return (
     <ReactQueryProvider>
       <ThemeProvider>
@@ -220,6 +223,7 @@ function RootLayoutNav() {
         <Stack.Screen name="transaction/pending" options={{ title: 'Transaction Pending', animation: 'none' }} />
         <Stack.Screen name="details" options={{ title: 'Details', animation: 'none' }} />
         <Stack.Screen name="nested" options={{ title: 'Nested', animation: 'none' }} />
+        <Stack.Screen name="settings/notifications" options={{ title: 'Notification Preferences', animation: 'none' }} />
       </Stack>
       <MemoryDiagnosticsOverlay />
     </SafeAreaView>

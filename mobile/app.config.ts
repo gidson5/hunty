@@ -47,6 +47,7 @@ export default {
     ios: {
       bundleIdentifier: config.bundleId,
       supportsTablet: true,
+      associatedDomains: ["applinks:hunty.app"],
       infoPlist: {
         UIViewControllerBasedStatusBarAppearance: true,
         NSFaceIDUsageDescription: 'Use Face ID to unlock your Hunty wallet securely.',
@@ -75,6 +76,18 @@ export default {
           autoVerify: true,
           data: [{ scheme: "hunty" }, { scheme: "wc" }],
           category: ["DEFAULT", "BROWSABLE"],
+        },
+        {
+          action: "VIEW",
+          autoVerify: true,
+          category: ["BROWSABLE", "DEFAULT"],
+          data: [
+            {
+              scheme: "https",
+              host: "hunty.app",
+              pathPrefix: "/hunt",
+            },
+          ],
         },
       ],
     },

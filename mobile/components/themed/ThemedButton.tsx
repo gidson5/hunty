@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useTheme } from '@providers/ThemeProvider';
 import { ThemedCustomText } from './ThemedCustomText';
+import { useHaptics } from '@hooks/useHaptics';
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -87,6 +88,7 @@ export const ThemedButton: React.FC<ThemedButtonProps> = ({
   const loadingState = isLoading ?? loading;
   const [pressed, setPressed] = useState(false);
   const { colors } = useTheme();
+  const haptics = useHaptics();
 
   const variantStyle = variantStyles[variant](colors);
   const sizeStyle = sizeStyles[size];
